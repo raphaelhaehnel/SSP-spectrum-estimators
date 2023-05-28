@@ -76,17 +76,48 @@ def generate_x2_initial(L: int):
 
 def compute_periodogram(x: np.ndarray, L: int, M: int):
     x_periodogram = 1 / L * abs(fft.fft(x, M)) ** 2
-    x_periodogram_half = x_periodogram[: int(M / 2) + 1]
+    x_periodogram_half = x_periodogram[: int(M / 2) + 1] / 2
 
-    return x_periodogram_half / 2
+    return x_periodogram_half
 
 
 def compute_correlogram(x: np.ndarray, L: int, M: int):
     Rx = 1 / L * np.correlate(x, x, mode="full")
     x_correlogram = np.abs(fft.fft(Rx, M))
-    x_correlogram_half = x_correlogram[: int(M / 2) + 1]
+    x_correlogram_half = x_correlogram[: int(M / 2) + 1] / 2
 
-    return x_correlogram_half / 2
+    return x_correlogram_half
+
+
+def compute_bartlet(x: np.ndarray, M: int, K: int, L: int):
+    x_splitted = np.split(x, K)
+    x_barlet = np.zeros(M)
+    for sub_x in x_splitted:
+        x_barlet += 1 / L * np.abs(fft.fft(sub_x, M)) ** 2
+
+    x_barlet = x_barlet[: int(M / 2) + 1]
+
+    return x_barlet / K
+
+
+def compute_welch(x: np.ndarray):
+    L = 3
+    D = 1
+
+    x_splitted = [x[i : i + L] for i in range(0, len(x), D)]
+
+    x_welch = np.zeros(M)
+
+    for sub_x in x_splitted:
+        x_welch += 1 / L * np.abs(fft.fft(sub_x, M)) ** 2
+
+    x_welch = x_welch[: int(M / 2) + 1]
+
+    return x_welch / len(x_splitted)
+
+    L = 3
+    D = 1
+    B = [x[i : i + L] for i in range(0, len(x), D)]
 
 
 def mean_periodogram_x(Mc: int, L: int, M: int, signal: str, sigma: float):
@@ -109,10 +140,14 @@ def display_estimators(
     x1_correlogram: np.ndarray,
     x1_periodogram: np.ndarray,
     x1_mean_period: np.ndarray,
+    x1_bartlett16: np.ndarray,
+    x1_bartlett64: np.ndarray,
     Sxx1: np.ndarray,
     x2_correlogram: np.ndarray,
     x2_periodogram: np.ndarray,
     x2_mean_period: np.ndarray,
+    x2_bartlett16: np.ndarray,
+    x2_bartlett64: np.ndarray,
     Sxx2: np.ndarray,
 ):
     fig, ax = plt.subplots(2, sharex=True)
@@ -122,6 +157,8 @@ def display_estimators(
     ax[0].plot(
         k_half, x1_mean_period, color="tab:blue", label="Monte-Carlo Periodogram"
     )
+    ax[0].plot(k_half, x1_bartlett16, color="tab:olive", label="Bartlet16")
+    ax[0].plot(k_half, x1_bartlett64, color="tab:pink", label="Bartlet64")
     ax[0].plot(k_half, Sxx1, color="tab:red", label="Analytic")
     ax[0].set_xlabel(r"$\omega$")
     ax[0].set_ylabel(r"$\hat{S}_{XX_1}$")
@@ -133,6 +170,8 @@ def display_estimators(
     ax[1].plot(
         k_half, x2_mean_period, color="tab:blue", label="Monte-Carlo Periodogram"
     )
+    ax[1].plot(k_half, x2_bartlett16, color="tab:olive", label="Bartlet16")
+    ax[1].plot(k_half, x2_bartlett64, color="tab:pink", label="Bartlet64")
     ax[1].plot(k_half, Sxx2, color="tab:red", label="Analytic")
     ax[1].set_xlabel(r"$\omega$")
     ax[1].set_ylabel(r"$\hat{S}_{XX_2}$")
@@ -175,7 +214,7 @@ if __name__ == "__main__":
     k = np.linspace(0, 2 * np.pi, M)
     k_half = np.linspace(0, np.pi, int(M / 2) + 1)
 
-    # Computation of the periodogram
+    # Computation of the Periodogram
     x1_periodogram = compute_periodogram(x1, L, M)
     x2_periodogram = compute_periodogram(x2, L, M)
 
@@ -183,22 +222,32 @@ if __name__ == "__main__":
     x1_correlogram = compute_correlogram(x1, L, M)
     x2_correlogram = compute_correlogram(x2, L, M)
 
+    x1_bartlett_16 = compute_bartlet(x1, M, K=16, L=64)
+    x2_bartlett_16 = compute_bartlet(x2, M, K=16, L=64)
+
+    x1_bartlett_64 = compute_bartlet(x1, M, K=64, L=16)
+    x2_bartlett_64 = compute_bartlet(x2, M, K=64, L=16)
+
     # Monte-carlo simulation
     Mc = 100
 
     estimator_periodogram_x1 = Estimator(Mc, L, M, "x1", Sxx1, sigma_1)
     estimator_periodogram_x2 = Estimator(Mc, L, M, "x2", Sxx2, sigma_2)
 
-    # Displays the 4 estimators in one window
+    # Displays the estimators in one window
     display_estimators(
         k_half,
         x1_correlogram,
         x1_periodogram,
         estimator_periodogram_x1.mean,
+        x1_bartlett_16,
+        x1_bartlett_64,
         Sxx1,
         x2_correlogram,
         x2_periodogram,
         estimator_periodogram_x2.mean,
+        x2_bartlett_16,
+        x2_bartlett_64,
         Sxx2,
     )
 
