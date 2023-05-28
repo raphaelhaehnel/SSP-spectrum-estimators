@@ -100,10 +100,7 @@ def compute_bartlet(x: np.ndarray, M: int, K: int, L: int):
     return x_barlet / K
 
 
-def compute_welch(x: np.ndarray):
-    L = 3
-    D = 1
-
+def compute_welch(x: np.ndarray, M: int, K: int, L: int, D: int):
     x_splitted = [x[i : i + L] for i in range(0, len(x), D)]
 
     x_welch = np.zeros(M)
@@ -114,10 +111,6 @@ def compute_welch(x: np.ndarray):
     x_welch = x_welch[: int(M / 2) + 1]
 
     return x_welch / len(x_splitted)
-
-    L = 3
-    D = 1
-    B = [x[i : i + L] for i in range(0, len(x), D)]
 
 
 def mean_periodogram_x(Mc: int, L: int, M: int, signal: str, sigma: float):
@@ -227,6 +220,9 @@ if __name__ == "__main__":
 
     x1_bartlett_64 = compute_bartlet(x1, M, K=64, L=16)
     x2_bartlett_64 = compute_bartlet(x2, M, K=64, L=16)
+
+    x1_welch_61 = compute_welch(x1, M, K=61, L=64, D=48)
+    x2_welch_253 = compute_welch(x2, M, K=253, L=16, D=12)
 
     # Monte-carlo simulation
     Mc = 100
