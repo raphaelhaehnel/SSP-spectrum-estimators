@@ -90,9 +90,20 @@ def generate_x2_signal(L: int, sigma_2: float):
     return x2
 
 
-def generate_x2_initial(L: int):
+def generate_x2_initial(L: int, sigma_2: float):
     """
-    Generate the signal x2 by sampling x2[0] according to normal distribution
+    Generates the signal x2 by sampling random values for w2, and filtering to simulate an AR process.
+    Because the AR process depends on initial condition, we use only the second half of the signal.
+    This function is generating the signal by sampling x2[0] according to normal distribution
+
+    Parameters
+    ----------
+    L : Lenth of the signal x2
+    sigma_2 : Standard deviation of the noise w2
+
+    Returns
+    -------
+    x2 : Array of samples of the signal x2
     """
 
     w_2 = sigma_2 * np.random.randn(2 * L)
@@ -109,6 +120,16 @@ def generate_x2_initial(L: int):
 def compute_periodogram(x: np.ndarray, L: int, M: int):
     """
     Implementation of the Periodogram estimator
+
+    Parameters
+    ----------
+    x : Array of samples of a signal
+    L : Length of the signal
+    M : Length of the fourier transform (resolution of the frequency plane)
+
+    Returns
+    -------
+    x_periodogram_half : Periodogram of the signal
     """
 
     x_periodogram = 1 / L * abs(fft.fft(x, M)) ** 2
@@ -120,6 +141,16 @@ def compute_periodogram(x: np.ndarray, L: int, M: int):
 def compute_correlogram(x: np.ndarray, L: int, M: int):
     """
     Implementation of the Correlogram estimator
+
+    Parameters
+    ----------
+    x : Array of samples of a signal
+    L : Length of the signal
+    M : Length of the fourier transform (resolution of the frequency plane)
+
+    Returns
+    -------
+    x_correlogram_half : Correlogram of the signal
     """
 
     Rx = 1 / L * np.correlate(x, x, mode="full")
@@ -129,9 +160,20 @@ def compute_correlogram(x: np.ndarray, L: int, M: int):
     return x_correlogram_half
 
 
-def compute_bartlet(x: np.ndarray, M: int, K: int, L: int):
+def compute_bartlett(x: np.ndarray, M: int, K: int, L: int):
     """
     Implementation of the Bartlett estimator
+
+    Parameters
+    ----------
+    x : Array of samples of a signal
+    M : Length of the fourier transform (resolution of the frequency plane)
+    K : Number of sections of the signal
+    L : Length of one section from the signal
+
+    Returns
+    -------
+    x_correlogram_half : Correlogram of the signal
     """
 
     x_splitted = np.split(x, K)
@@ -139,9 +181,9 @@ def compute_bartlet(x: np.ndarray, M: int, K: int, L: int):
     for sub_x in x_splitted:
         x_barlet += 1 / L * np.abs(fft.fft(sub_x, M)) ** 2
 
-    x_barlet = x_barlet[: int(M / 2) + 1]
+    x_barlet = x_barlet[: int(M / 2) + 1] / K
 
-    return x_barlet / K
+    return x_barlet
 
 
 def compute_welch(x: np.ndarray, M: int, K: int, L: int, D: int):
@@ -273,7 +315,7 @@ if __name__ == "__main__":
     x2 = generate_x2_signal(L, sigma_2)
 
     # Signal that we are generating by defining x2[0] manually
-    x2_initial = generate_x2_initial(L)
+    x2_initial = generate_x2_initial(L, sigma_2)
 
     display_samples(x1, x2)
 
@@ -289,11 +331,11 @@ if __name__ == "__main__":
     x1_correlogram = compute_correlogram(x1, L, M)
     x2_correlogram = compute_correlogram(x2, L, M)
 
-    x1_bartlett_16 = compute_bartlet(x1, M, K=16, L=64)
-    x2_bartlett_16 = compute_bartlet(x2, M, K=16, L=64)
+    x1_bartlett_16 = compute_bartlett(x1, M, K=16, L=64)
+    x2_bartlett_16 = compute_bartlett(x2, M, K=16, L=64)
 
-    x1_bartlett_64 = compute_bartlet(x1, M, K=64, L=16)
-    x2_bartlett_64 = compute_bartlet(x2, M, K=64, L=16)
+    x1_bartlett_64 = compute_bartlett(x1, M, K=64, L=16)
+    x2_bartlett_64 = compute_bartlett(x2, M, K=64, L=16)
 
     x1_welch_61 = compute_welch(x1, M, K=61, L=64, D=64 - 48)
     x2_welch_61 = compute_welch(x2, M, K=61, L=64, D=64 - 48)
