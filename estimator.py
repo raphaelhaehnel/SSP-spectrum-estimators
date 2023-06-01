@@ -1,4 +1,6 @@
 import numpy as np
+from enum import Enum
+from signal_processing import *
 
 
 class Estimator:
@@ -6,43 +8,92 @@ class Estimator:
     This class implements a specific estimator
     """
 
-    def __init__(self, Mc, L, M, signal, Sxx, sigma):
-        self.mean = self.__mean_periodogram(Mc, L, M, signal, sigma)
-        self.bias = self.mean - Sxx
-        self.variance = self.__variance_periodogram(Mc, L, M, signal, sigma)
-        self.error = self.__MSE()
+    def __init__(
+        self,
+        signal_type: Signal,
+        estimator_type: Estimate,
+        Mc: int,
+        L: int,
+        L_section: int,
+        L_BT: int,
+        K: int,
+        D: int,
+        M: int,
+        sigma: float,
+        omega: np.ndarray,
+    ):
+        self.signal_type = signal_type
+        self.estimator_type = estimator_type
+        self.Mc = Mc
+        self.L = L
+        self.L_section = L_section
+        self.L_BT = L_BT
+        self.K = K
+        self.D = D
+        self.M = M
+        self.sigma = sigma
+        self.omega = omega
+        self.Sxx = generate_analytic_spectrum(self.signal_type, self.omega)
 
-    def __mean_periodogram(self, Mc, L, M, signal, sigma):
-        from main import generate_x1_signal, generate_x2_signal, compute_periodogram
+        self.mean = self.compute_mean()
+        self.bias = self.compute_bias()
+        self.variance = self.compute_variance()
+        self.error = self.compute_mse()
 
-        mean_periodogram = np.zeros(2 * L + 1)
+    def compute_mean(self):
+        mean = np.zeros(2 * self.L + 1)
 
-        for i in range(Mc):
-            x = (
-                generate_x1_signal(2 * L + 1, sigma)
-                if signal == "x1"
-                else generate_x2_signal(2 * L + 1, sigma)
-            )
-            x_periodogram = compute_periodogram(x, L, M)
-            mean_periodogram += x_periodogram
+        for i in range(self.Mc):
+            # Generate the signal
+            x = self.__get_signal()
 
-        return mean_periodogram / Mc
+            # Generate the estimation
+            x_estimation = self.__get_estimation(x)
 
-    def __variance_periodogram(self, Mc, L, M, signal, sigma):
-        from main import generate_x1_signal, generate_x2_signal, compute_periodogram
+            # Add the current estimation to the mean of estimations
+            mean += x_estimation
 
-        mean_periodogram = np.zeros(2 * L + 1)
+        return mean / self.Mc
 
-        for i in range(Mc):
-            x = (
-                generate_x1_signal(2 * L + 1, sigma)
-                if signal == "x1"
-                else generate_x2_signal(2 * L + 1, sigma)
-            )
-            x_periodogram = compute_periodogram(x, L, M)
-            mean_periodogram += np.abs(x_periodogram - self.mean) ** 2
+    def compute_variance(self):
+        variance = np.zeros(2 * self.L + 1)
 
-        return mean_periodogram / Mc
+        for i in range(self.Mc):
+            # Generate the signal
+            x = self.__get_signal()
 
-    def __MSE(self):
+            # Generate the estimation
+            x_estimation = self.__get_estimation(x)
+
+            # Add the current estimation to the mean of estimations
+            variance += np.abs(x_estimation - self.mean) ** 2
+
+        return variance / self.Mc
+
+    def compute_bias(self):
+        return self.mean - self.Sxx
+
+    def compute_mse(self):
         return self.variance + self.bias**2
+
+    def __get_signal(self):
+        if self.signal_type == Signal.x1:
+            return generate_x1_signal(2 * self.L + 1, self.sigma)
+        elif self.signal_type == Signal.x2:
+            return generate_x2_signal(2 * self.L + 1, self.sigma)
+        else:
+            error = f"Invalid parameter '{self.signal_type}'"
+            raise ValueError(error)
+
+    def __get_estimation(self, x: np.ndarray):
+        if self.estimator_type == Estimate.PERIODOGRAM:
+            return compute_periodogram(x, self.L, self.M)
+        elif self.estimator_type == Estimate.BARTLETT:
+            return compute_bartlett(x, self.M, self.K, self.L_section)
+        elif self.estimator_type == Estimate.WELCH:
+            return compute_welch(x, self.M, self.K, self.L_section, self.D)
+        elif self.estimator_type == Estimate.BLACKMAN_TUKEY:
+            return compute_BT(x, self.L, self.M, self.L_BT)
+        else:
+            error = f"Invalid parameter '{self.estimator_type}'"
+            raise ValueError(error)
