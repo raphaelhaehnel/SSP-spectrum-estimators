@@ -115,7 +115,7 @@ def compute_periodogram(x: np.ndarray, L: int, M: int):
     x_periodogram = 1 / L * abs(fft.fft(x, M)) ** 2
 
     # The fourier transform is duplicated, so we are taking only the first half of the transform
-    x_periodogram_half = x_periodogram[: int(M / 2) + 1] / 2
+    x_periodogram_half = x_periodogram[: int(M / 2) + 1]
 
     return x_periodogram_half
 
@@ -141,7 +141,7 @@ def compute_correlogram(x: np.ndarray, L: int, M: int):
     # Compute the fourier transform
     x_correlogram = np.abs(fft.fft(Rx, M))
 
-    x_correlogram_half = x_correlogram[: int(M / 2) + 1] / 2
+    x_correlogram_half = x_correlogram[: int(M / 2) + 1]
 
     return x_correlogram_half
 

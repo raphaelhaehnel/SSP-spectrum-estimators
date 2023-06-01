@@ -5,7 +5,8 @@ from signal_processing import *
 
 class Estimator:
     """
-    This class implements a specific estimator
+    This class implements an estimator for a specific signal and a specific estimator.
+    It computes the Monte-Carlo, its variance, bias and error.
     """
 
     def __init__(
@@ -13,23 +14,23 @@ class Estimator:
         signal_type: Signal,
         estimator_type: Estimate,
         Mc: int,
-        L: int,
-        L_section: int,
-        L_BT: int,
-        K: int,
-        D: int,
-        M: int,
         sigma: float,
         omega: np.ndarray,
+        L: int,
+        K: int,
+        L_section: int,
+        D: int,
+        L_BT: int,
+        M: int,
     ):
         self.signal_type = signal_type
         self.estimator_type = estimator_type
         self.Mc = Mc
         self.L = L
-        self.L_section = L_section
-        self.L_BT = L_BT
         self.K = K
+        self.L_section = L_section
         self.D = D
+        self.L_BT = L_BT
         self.M = M
         self.sigma = sigma
         self.omega = omega
@@ -39,6 +40,10 @@ class Estimator:
         self.bias = self.compute_bias()
         self.variance = self.compute_variance()
         self.error = self.compute_mse()
+
+        self.bias_value = np.mean(self.bias)
+        self.variance_value = np.mean(self.variance)
+        self.error_value = np.mean(self.error)
 
     def compute_mean(self):
         mean = np.zeros(2 * self.L + 1)
@@ -78,9 +83,9 @@ class Estimator:
 
     def __get_signal(self):
         if self.signal_type == Signal.x1:
-            return generate_x1_signal(2 * self.L + 1, self.sigma)
+            return generate_x1_signal(self.L, self.sigma)
         elif self.signal_type == Signal.x2:
-            return generate_x2_signal(2 * self.L + 1, self.sigma)
+            return generate_x2_signal(self.L, self.sigma)
         else:
             error = f"Invalid parameter '{self.signal_type}'"
             raise ValueError(error)

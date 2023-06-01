@@ -1,3 +1,4 @@
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 from estimator import Estimate, Estimator
@@ -59,22 +60,23 @@ def display_samples(x1: np.ndarray, x2: np.ndarray):
 
 
 def display_estimators(
+    title: str,
     k_half: np.ndarray,
     x1_correlogram: np.ndarray,
     x1_periodogram: np.ndarray,
-    x1_mean_period: np.ndarray,
     x1_bartlett16: np.ndarray,
     x1_bartlett64: np.ndarray,
     x1_welch_61: np.ndarray,
+    x1_welch_253: np.ndarray,
     x1_bt_4: np.ndarray,
     x1_bt_2: np.ndarray,
     Sxx1: np.ndarray,
     x2_correlogram: np.ndarray,
     x2_periodogram: np.ndarray,
-    x2_mean_period: np.ndarray,
     x2_bartlett16: np.ndarray,
     x2_bartlett64: np.ndarray,
     x2_welch_61: np.ndarray,
+    x2_welch_253: np.ndarray,
     x2_bt_4: np.ndarray,
     x2_bt_2: np.ndarray,
     Sxx2: np.ndarray,
@@ -88,37 +90,61 @@ def display_estimators(
 
     """
     fig, ax = plt.subplots(2, sharex=True)
-    fig.suptitle("Estimators")
-    # ax[0].plot(k_half, x1_correlogram, color="tab:purple", label="Correlogram")
-    # ax[0].plot(k_half, x1_periodogram, color="tab:green", label="Periodogram")
-    ax[0].plot(k_half, x1_mean_period, color="tab:blue", label="Monte-Carlo Periodogram")
-    # ax[0].plot(k_half, x1_bartlett16, color="tab:olive", label="Bartlet16")
+    fig.suptitle(title)
+    if x1_correlogram is not None:
+        ax[0].plot(k_half, x1_correlogram, color="tab:purple", label="Correlogram")
+    ax[0].plot(k_half, x1_periodogram, color="tab:green", label="Periodogram")
+    ax[0].plot(k_half, x1_bartlett16, color="tab:olive", label="Bartlet16")
     # ax[0].plot(k_half, x1_bartlett64, color="tab:pink", label="Bartlet64")
     # ax[0].plot(k_half, x1_welch_61, color="tab:pink", label="Welch61")
-    # ax[0].plot(k_half, x1_bt_4, color="tab:blue", label="Blackman Tukey4")
-    # ax[0].plot(k_half, x1_bt_2, color="tab:purple", label="Blackman Tukey2")
-    ax[0].plot(k_half, Sxx1, color="tab:red", label="Analytic")
+    # ax[0].plot(k_half, x1_welch_253, color="tab:grey", label="Welch253")
+    ax[0].plot(k_half, x1_bt_4, color="tab:blue", label="Blackman Tukey4")
+    ax[0].plot(k_half, x1_bt_2, color="tab:purple", label="Blackman Tukey2")
+    if Sxx1 is not None:
+        ax[0].plot(k_half, Sxx1, color="tab:red", label="Analytic")
     ax[0].set_xlabel(r"$\omega$")
     ax[0].set_ylabel(r"$\hat{S}_{XX_1}$")
     ax[0].legend()
     ax[0].grid()
-
-    # ax[1].plot(k_half, x2_correlogram, color="tab:purple", label="Correlogram")
-    # ax[1].plot(k_half, x2_periodogram, color="tab:green", label="Periodogram")
-    ax[1].plot(k_half, x2_mean_period, color="tab:blue", label="Monte-Carlo Periodogram")
-    # ax[1].plot(k_half, x2_bartlett16, color="tab:olive", label="Bartlet16")
+    if x2_correlogram is not None:
+        ax[1].plot(k_half, x2_correlogram, color="tab:purple", label="Correlogram")
+    ax[1].plot(k_half, x2_periodogram, color="tab:green", label="Periodogram")
+    ax[1].plot(k_half, x2_bartlett16, color="tab:olive", label="Bartlet16")
     # ax[1].plot(k_half, x2_bartlett64, color="tab:pink", label="Bartlet64")
     # ax[1].plot(k_half, x2_welch_61, color="tab:pink", label="Welch61")
-    # ax[1].plot(k_half, x2_bt_4, color="tab:blue", label="Blackman Tukey4")
-    # ax[1].plot(k_half, x2_bt_2, color="tab:purple", label="Blackman Tukey2")
-    ax[1].plot(k_half, Sxx2, color="tab:red", label="Analytic")
+    # ax[1].plot(k_half, x2_welch_253, color="tab:grey", label="Welch253")
+    ax[1].plot(k_half, x2_bt_4, color="tab:blue", label="Blackman Tukey4")
+    ax[1].plot(k_half, x2_bt_2, color="tab:purple", label="Blackman Tukey2")
+    if Sxx2 is not None:
+        ax[1].plot(k_half, Sxx2, color="tab:red", label="Analytic")
     ax[1].set_xlabel(r"$\omega$")
     ax[1].set_ylabel(r"$\hat{S}_{XX_2}$")
     ax[1].legend()
     ax[1].grid()
 
 
+def display_bar_chart(
+    x1_periodogram: float,
+    x1_bartlett16: float,
+    x1_bartlett64: float,
+    x1_welch_61: float,
+    x1_welch_253: float,
+    x1_bt_4: float,
+    x1_bt_2: float,
+    x2_periodogram: float,
+    x2_bartlett16: float,
+    x2_bartlett64: float,
+    x2_welch_61: float,
+    x2_welch_253: float,
+    x2_bt_4: float,
+    x2_bt_2: float,
+):
+    pass
+
+
 if __name__ == "__main__":
+    start = time.time()
+
     # Question 1 #
 
     # For the first question, we want to display the result of the analytic computation of the spectrum
@@ -154,6 +180,12 @@ if __name__ == "__main__":
     k = np.linspace(0, 2 * np.pi, M)
     k_half = np.linspace(0, np.pi, int(M / 2) + 1)
 
+    end = time.time()
+
+    print(f"Time | Basic computations : {'{:.2f}'.format(end-start)} sec")
+
+    start = time.time()
+
     # Computation of the Periodogram
     x1_periodogram = compute_periodogram(x1, L, M)
     x2_periodogram = compute_periodogram(x2, L, M)
@@ -170,11 +202,11 @@ if __name__ == "__main__":
     x1_bartlett_64 = compute_bartlett(x1, M, K=64, L_section=16)
     x2_bartlett_64 = compute_bartlett(x2, M, K=64, L_section=16)
 
-    # Computation of the Welch estimation with overlapping of 64
+    # Computation of the Welch estimation with 61 sections and overlapping of 48
     x1_welch_61 = compute_welch(x1, M, K=61, L_section=64, D=64 - 48)
     x2_welch_61 = compute_welch(x2, M, K=61, L_section=64, D=64 - 48)
 
-    # Computation of the Welch estimation with overlapping of 16
+    # Computation of the Welch estimation with 253 sections and overlapping of 12
     x1_welch_253 = compute_welch(x1, M, K=253, L_section=16, D=16 - 12)
     x2_welch_253 = compute_welch(x2, M, K=253, L_section=16, D=16 - 12)
 
@@ -186,46 +218,172 @@ if __name__ == "__main__":
     x1_bt_2 = compute_BT(x1, L, M, L_BT=2)
     x2_bt_2 = compute_BT(x2, L, M, L_BT=2)
 
+    end = time.time()
+
+    print(f"Time | Estimators : {'{:.2f}'.format(end-start)} sec")
+
+    start = time.time()
+
     # The number of simulation (Monte-carlo)
     Mc = 100
 
-    # my_estimator = Estimator(
-    #     Estimate.PERIODOGRAM,
-    #     Signal.x1,
-    #     Mc,
-    # )
+    # Monte-Carlo for Periodogram
+    mc_x1_periodogram = Estimator(Signal.x1, Estimate.PERIODOGRAM, Mc, SIGMA_1, omega, L, None, None, None, None, M)
+    mc_x2_periodogram = Estimator(Signal.x2, Estimate.PERIODOGRAM, Mc, SIGMA_2, omega, L, None, None, None, None, M)
 
-    # estimator_periodogram_x1 = Estimator(Mc, L, M, "x1", Sxx1, SIGMA_1)
-    # estimator_periodogram_x2 = Estimator(Mc, L, M, "x2", Sxx2, SIGMA_2)
+    # Monte-Carlo for Bartlett16
+    mc_x1_bartlett_16 = Estimator(Signal.x1, Estimate.BARTLETT, Mc, SIGMA_1, omega, L, 16, 64, None, None, M)
+    mc_x2_bartlett_16 = Estimator(Signal.x2, Estimate.BARTLETT, Mc, SIGMA_2, omega, L, 16, 64, None, None, M)
 
-    estimator_periodogram_x1 = Estimator(
-        Signal.x1, Estimate.PERIODOGRAM, Mc, L, None, None, None, None, M, SIGMA_1, omega
-    )
-    estimator_periodogram_x2 = Estimator(
-        Signal.x2, Estimate.PERIODOGRAM, Mc, L, None, None, None, None, M, SIGMA_2, omega
-    )
+    # Monte-Carlo for Bartlett64
+    mc_x1_bartlett_64 = Estimator(Signal.x1, Estimate.BARTLETT, Mc, SIGMA_1, omega, L, 64, 16, None, None, M)
+    mc_x2_bartlett_64 = Estimator(Signal.x2, Estimate.BARTLETT, Mc, SIGMA_2, omega, L, 64, 16, None, None, M)
 
-    # Displays the estimators in one window
+    # Monte-Carlo for Welch61
+    mc_x1_welch_61 = Estimator(Signal.x1, Estimate.WELCH, Mc, SIGMA_1, omega, L, 61, 64, 64 - 48, None, M)
+    mc_x2_welch_61 = Estimator(Signal.x2, Estimate.WELCH, Mc, SIGMA_2, omega, L, 61, 64, 64 - 48, None, M)
+
+    # Monte-Carlo for Welch253
+    mc_x1_welch_253 = Estimator(Signal.x1, Estimate.WELCH, Mc, SIGMA_1, omega, L, 253, 16, 16 - 12, None, M)
+    mc_x2_welch_253 = Estimator(Signal.x2, Estimate.WELCH, Mc, SIGMA_2, omega, L, 253, 16, 16 - 12, None, M)
+
+    # TODO Blackman-Tukey for x2 is not working well !
+
+    # Monte-Carlo for BlackmanTukey4
+    mc_x1_bt_4 = Estimator(Signal.x1, Estimate.BLACKMAN_TUKEY, Mc, SIGMA_1, omega, L, None, None, None, 4, M)
+    mc_x2_bt_4 = Estimator(Signal.x2, Estimate.BLACKMAN_TUKEY, Mc, SIGMA_2, omega, L, None, None, None, 4, M)
+
+    # Monte-Carlo for BlackmanTukey2
+    mc_x1_bt_2 = Estimator(Signal.x1, Estimate.BLACKMAN_TUKEY, Mc, SIGMA_1, omega, L, None, None, None, 2, M)
+    mc_x2_bt_2 = Estimator(Signal.x2, Estimate.BLACKMAN_TUKEY, Mc, SIGMA_2, omega, L, None, None, None, 2, M)
+
+    end = time.time()
+
+    print(f"Time | Monte-Carlo : {'{:.2f}'.format(end-start)} sec")
+
+    start = time.time()
+
+    # Displays the estimators WITHOUT monte-carlo
     display_estimators(
+        "Estimators (Without Monte-Carlo)",
         k_half,
         x1_correlogram,
         x1_periodogram,
-        estimator_periodogram_x1.mean,
         x1_bartlett_16,
         x1_bartlett_64,
         x1_welch_61,
+        x1_welch_253,
         x1_bt_4,
         x1_bt_2,
         Sxx1,
         x2_correlogram,
         x2_periodogram,
-        estimator_periodogram_x2.mean,
         x2_bartlett_16,
         x2_bartlett_64,
         x2_welch_61,
+        x2_welch_253,
         x2_bt_4,
         x2_bt_2,
         Sxx2,
     )
+
+    # Displays the estimators WITH monte-carlo
+    display_estimators(
+        "Estimators (With Monte-Carlo)",
+        k_half,
+        None,
+        mc_x1_periodogram.mean,
+        mc_x1_bartlett_16.mean,
+        mc_x1_bartlett_64.mean,
+        mc_x1_welch_61.mean,
+        mc_x1_welch_253.mean,
+        mc_x1_bt_4.mean,
+        mc_x1_bt_2.mean,
+        Sxx1,
+        None,
+        mc_x2_periodogram.mean,
+        mc_x2_bartlett_16.mean,
+        mc_x2_bartlett_64.mean,
+        mc_x2_welch_61.mean,
+        mc_x2_welch_253.mean,
+        mc_x2_bt_4.mean,
+        mc_x2_bt_2.mean,
+        Sxx2,
+    )
+
+    # Displays the estimators bias
+    display_estimators(
+        "Bias",
+        k_half,
+        None,
+        mc_x1_periodogram.bias,
+        mc_x1_bartlett_16.bias,
+        mc_x1_bartlett_64.bias,
+        mc_x1_welch_61.bias,
+        mc_x1_welch_253.bias,
+        mc_x1_bt_4.bias,
+        mc_x1_bt_2.bias,
+        None,
+        None,
+        mc_x2_periodogram.bias,
+        mc_x2_bartlett_16.bias,
+        mc_x2_bartlett_64.bias,
+        mc_x2_welch_61.bias,
+        mc_x2_welch_253.bias,
+        mc_x2_bt_4.bias,
+        mc_x2_bt_2.bias,
+        None,
+    )
+
+    # Displays the estimators variance
+    display_estimators(
+        "Variance",
+        k_half,
+        None,
+        mc_x1_periodogram.variance,
+        mc_x1_bartlett_16.variance,
+        mc_x1_bartlett_64.variance,
+        mc_x1_welch_61.variance,
+        mc_x1_welch_253.variance,
+        mc_x1_bt_4.variance,
+        mc_x1_bt_2.variance,
+        None,
+        None,
+        mc_x2_periodogram.variance,
+        mc_x2_bartlett_16.variance,
+        mc_x2_bartlett_64.variance,
+        mc_x2_welch_61.variance,
+        mc_x2_welch_253.variance,
+        mc_x2_bt_4.variance,
+        mc_x2_bt_2.variance,
+        None,
+    )
+
+    # Displays the estimators error
+    display_estimators(
+        "MSE",
+        k_half,
+        None,
+        mc_x1_periodogram.error,
+        mc_x1_bartlett_16.error,
+        mc_x1_bartlett_64.error,
+        mc_x1_welch_61.error,
+        mc_x1_welch_253.error,
+        mc_x1_bt_4.error,
+        mc_x1_bt_2.error,
+        None,
+        None,
+        mc_x2_periodogram.error,
+        mc_x2_bartlett_16.error,
+        mc_x2_bartlett_64.error,
+        mc_x2_welch_61.error,
+        mc_x2_welch_253.error,
+        mc_x2_bt_4.error,
+        mc_x2_bt_2.error,
+        None,
+    )
+    end = time.time()
+
+    print(f"Time | Displaying : {'{:.2f}'.format(end-start)} sec")
 
     plt.show()
