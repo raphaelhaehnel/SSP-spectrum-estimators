@@ -218,8 +218,19 @@ def compute_BT(x: np.ndarray, L: int, M: int, L_BT: int):
     """
 
     Rx = 1 / L * np.correlate(x, x, mode="full")
+
+    # Generate the window (Dirichlet function)
     Rx_windowed = Rx[L - 1 - L_BT : L + L_BT]
+
+    """
+    Alternatively, we could have use an artificial window function by setting to zero
+    all the values but the wanted values. The result is the same.
+    """
+    # Rx_windowed = Rx
+    # Rx_windowed[: L - 1 - L_BT] = 0
+    # Rx_windowed[L + L_BT :] = 0
+
     x_BT = np.abs(fft.fft(Rx_windowed, M))
-    x_BT_half = x_BT[: int(M / 2) + 1]  # TODO why here I don't need to divide by 2 ?
+    x_BT_half = x_BT[: int(M / 2) + 1]
 
     return x_BT_half

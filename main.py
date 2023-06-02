@@ -90,36 +90,45 @@ def display_estimators(
     Parameters
     ----------
     Takes all the estimators as parameters
-
     """
     fig, ax = plt.subplots(2, sharex=True)
     fig.suptitle(title)
+
     if x1_correlogram is not None:
-        ax[0].plot(k_half, x1_correlogram, color="tab:purple", label="Correlogram")
-    ax[0].plot(k_half, x1_periodogram, color="tab:green", label="Periodogram")
-    ax[0].plot(k_half, x1_bartlett16, color="tab:olive", label="Bartlet16")
-    # ax[0].plot(k_half, x1_bartlett64, color="tab:pink", label="Bartlet64")
-    # ax[0].plot(k_half, x1_welch_61, color="tab:pink", label="Welch61")
-    # ax[0].plot(k_half, x1_welch_253, color="tab:grey", label="Welch253")
-    ax[0].plot(k_half, x1_bt_4, color="tab:blue", label="Blackman Tukey4")
-    ax[0].plot(k_half, x1_bt_2, color="tab:purple", label="Blackman Tukey2")
+        ax[0].plot(k_half, x1_correlogram, label="Correlogram")
+
+    # Display all the estimators for x1
+    ax[0].plot(k_half, x1_periodogram, label="Periodogram")
+    ax[0].plot(k_half, x1_bartlett16, label="Bartlet16")
+    ax[0].plot(k_half, x1_bartlett64, label="Bartlet64")
+    ax[0].plot(k_half, x1_welch_61, label="Welch61")
+    ax[0].plot(k_half, x1_welch_253, label="Welch253")
+    ax[0].plot(k_half, x1_bt_4, label="Blackman Tukey4")
+    ax[0].plot(k_half, x1_bt_2, label="Blackman Tukey2")
+
     if Sxx1 is not None:
-        ax[0].plot(k_half, Sxx1, color="tab:red", label="Analytic")
+        ax[0].plot(k_half, Sxx1, label="Analytic")
+
     ax[0].set_xlabel(r"$\omega$")
     ax[0].set_ylabel(r"$\hat{S}_{XX_1}$")
     ax[0].legend()
     ax[0].grid()
+
     if x2_correlogram is not None:
-        ax[1].plot(k_half, x2_correlogram, color="tab:purple", label="Correlogram")
-    ax[1].plot(k_half, x2_periodogram, color="tab:green", label="Periodogram")
-    ax[1].plot(k_half, x2_bartlett16, color="tab:olive", label="Bartlet16")
-    # ax[1].plot(k_half, x2_bartlett64, color="tab:pink", label="Bartlet64")
-    # ax[1].plot(k_half, x2_welch_61, color="tab:pink", label="Welch61")
-    # ax[1].plot(k_half, x2_welch_253, color="tab:grey", label="Welch253")
-    ax[1].plot(k_half, x2_bt_4, color="tab:blue", label="Blackman Tukey4")
-    ax[1].plot(k_half, x2_bt_2, color="tab:purple", label="Blackman Tukey2")
+        ax[1].plot(k_half, x2_correlogram, label="Correlogram")
+
+    # Display all the estimators for x2
+    ax[1].plot(k_half, x2_periodogram, label="Periodogram")
+    ax[1].plot(k_half, x2_bartlett16, label="Bartlet16")
+    ax[1].plot(k_half, x2_bartlett64, label="Bartlet64")
+    ax[1].plot(k_half, x2_welch_61, label="Welch61")
+    ax[1].plot(k_half, x2_welch_253, label="Welch253")
+    ax[1].plot(k_half, x2_bt_4, label="Blackman Tukey4")
+    ax[1].plot(k_half, x2_bt_2, label="Blackman Tukey2")
+
     if Sxx2 is not None:
-        ax[1].plot(k_half, Sxx2, color="tab:red", label="Analytic")
+        ax[1].plot(k_half, Sxx2, label="Analytic")
+
     ax[1].set_xlabel(r"$\omega$")
     ax[1].set_ylabel(r"$\hat{S}_{XX_2}$")
     ax[1].legend()
@@ -127,6 +136,16 @@ def display_estimators(
 
 
 def display_bar_chart(title: str, names: np.ndarray, x1: np.ndarray, x2: np.ndarray):
+    """
+    This function displays the performances values of the different estimators
+
+    Parameters
+    ----------
+    title : The name of the graph
+    names : Array containing the names of the different estimators
+    x1 : Array of samples of signal x1
+    x2 : Array of samples of signal x2
+    """
     n_signals = 2
 
     # Figure Size
@@ -202,6 +221,9 @@ if __name__ == "__main__":
     display_samples(x1, x2)
 
     k = np.linspace(0, 2 * np.pi, M)
+
+    # Due to the nature of the DFT that we display only positive frequency, we need to ignore
+    # half of the signal that is only a duplication of the spectrum
     k_half = np.linspace(0, np.pi, int(M / 2) + 1)
 
     end = time.time()
@@ -270,8 +292,6 @@ if __name__ == "__main__":
     # Monte-Carlo for Welch253
     mc_x1_welch_253 = Estimator(Signal.x1, Estimate.WELCH, Mc, SIGMA_1, omega, L, 253, 16, 16 - 12, None, M)
     mc_x2_welch_253 = Estimator(Signal.x2, Estimate.WELCH, Mc, SIGMA_2, omega, L, 253, 16, 16 - 12, None, M)
-
-    # TODO Blackman-Tukey for x2 is not working well !
 
     # Monte-Carlo for BlackmanTukey4
     mc_x1_bt_4 = Estimator(Signal.x1, Estimate.BLACKMAN_TUKEY, Mc, SIGMA_1, omega, L, None, None, None, 4, M)
