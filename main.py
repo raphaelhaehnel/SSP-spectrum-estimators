@@ -13,6 +13,9 @@ SIGMA_2: float = np.sqrt(0.51)
 # Length of the fourier transform (resolution of the frequency plane)
 M = 4096
 
+# Array of the names of the estimators we'll use with the Monte-Carlo
+LIST_ESTIMATORS: np.ndarray = np.array(["periodogram", "bartlett16", "bartlett64", "welch_61", "welch_253", "bt_4", "bt_2"])
+
 
 def display_analytic_spectrum(omega: np.ndarray, Sxx1: np.ndarray, Sxx2: np.ndarray):
     """
@@ -123,23 +126,44 @@ def display_estimators(
     ax[1].grid()
 
 
-def display_bar_chart(
-    x1_periodogram: float,
-    x1_bartlett16: float,
-    x1_bartlett64: float,
-    x1_welch_61: float,
-    x1_welch_253: float,
-    x1_bt_4: float,
-    x1_bt_2: float,
-    x2_periodogram: float,
-    x2_bartlett16: float,
-    x2_bartlett64: float,
-    x2_welch_61: float,
-    x2_welch_253: float,
-    x2_bt_4: float,
-    x2_bt_2: float,
-):
-    pass
+def display_bar_chart(title: str, names: np.ndarray, x1: np.ndarray, x2: np.ndarray):
+    n_signals = 2
+
+    # Figure Size
+    fig, ax = plt.subplots(2, sharex=True)
+
+    # Horizontal Bar Plot
+    ax[0].barh(names, x1, color="tab:blue")
+    ax[1].barh(names, x2, color="tab:orange")
+
+    for j in range(n_signals):
+        # Remove x, y Ticks
+        ax[j].xaxis.set_ticks_position("none")
+        ax[j].yaxis.set_ticks_position("none")
+
+        # Add padding between axes and labels
+        ax[j].xaxis.set_tick_params(pad=5)
+        ax[j].yaxis.set_tick_params(pad=10)
+
+        # Add x, y gridlines
+        ax[j].grid(color="grey", linestyle="-.", linewidth=0.5, alpha=0.2)
+
+        # Show top values
+        ax[j].invert_yaxis()
+
+        # Add annotation to bars
+        for i in ax[j].patches:
+            ax[j].text(
+                i.get_width() + np.max([x2, x1]) / 100,
+                i.get_y() + 0.5,
+                str(round((i.get_width()), 2)),
+                fontsize=10,
+                fontweight="bold",
+                color="grey",
+            )
+
+    # Add Plot Title
+    fig.suptitle(title)
 
 
 if __name__ == "__main__":
@@ -382,6 +406,77 @@ if __name__ == "__main__":
         mc_x2_bt_2.error,
         None,
     )
+
+    x1_biases = np.array(
+        [
+            mc_x1_periodogram.bias_value,
+            mc_x1_bartlett_16.bias_value,
+            mc_x1_bartlett_64.bias_value,
+            mc_x1_welch_61.bias_value,
+            mc_x1_welch_253.bias_value,
+            mc_x1_bt_4.bias_value,
+            mc_x1_bt_2.bias_value,
+        ]
+    )
+    x2_biases = np.array(
+        [
+            mc_x2_periodogram.bias_value,
+            mc_x2_bartlett_16.bias_value,
+            mc_x2_bartlett_64.bias_value,
+            mc_x2_welch_61.bias_value,
+            mc_x2_welch_253.bias_value,
+            mc_x2_bt_4.bias_value,
+            mc_x2_bt_2.bias_value,
+        ]
+    )
+    x1_variance = np.array(
+        [
+            mc_x1_periodogram.variance_value,
+            mc_x1_bartlett_16.variance_value,
+            mc_x1_bartlett_64.variance_value,
+            mc_x1_welch_61.variance_value,
+            mc_x1_welch_253.variance_value,
+            mc_x1_bt_4.variance_value,
+            mc_x1_bt_2.variance_value,
+        ]
+    )
+    x2_variance = np.array(
+        [
+            mc_x2_periodogram.variance_value,
+            mc_x2_bartlett_16.variance_value,
+            mc_x2_bartlett_64.variance_value,
+            mc_x2_welch_61.variance_value,
+            mc_x2_welch_253.variance_value,
+            mc_x2_bt_4.variance_value,
+            mc_x2_bt_2.variance_value,
+        ]
+    )
+    x1_error = np.array(
+        [
+            mc_x1_periodogram.error_value,
+            mc_x1_bartlett_16.error_value,
+            mc_x1_bartlett_64.error_value,
+            mc_x1_welch_61.error_value,
+            mc_x1_welch_253.error_value,
+            mc_x1_bt_4.error_value,
+            mc_x1_bt_2.error_value,
+        ]
+    )
+    x2_error = np.array(
+        [
+            mc_x2_periodogram.error_value,
+            mc_x2_bartlett_16.error_value,
+            mc_x2_bartlett_64.error_value,
+            mc_x2_welch_61.error_value,
+            mc_x2_welch_253.error_value,
+            mc_x2_bt_4.error_value,
+            mc_x2_bt_2.error_value,
+        ]
+    )
+    display_bar_chart("Bias values", LIST_ESTIMATORS, x1_biases, x2_biases)
+    display_bar_chart("Variance values", LIST_ESTIMATORS, x1_variance, x2_variance)
+    display_bar_chart("Error values", LIST_ESTIMATORS, x1_error, x2_error)
+
     end = time.time()
 
     print(f"Time | Displaying : {'{:.2f}'.format(end-start)} sec")

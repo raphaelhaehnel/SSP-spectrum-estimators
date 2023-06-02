@@ -41,7 +41,7 @@ class Estimator:
         self.variance = self.compute_variance()
         self.error = self.compute_mse()
 
-        self.bias_value = np.mean(self.bias)
+        self.bias_value = np.mean(self.bias**2)
         self.variance_value = np.mean(self.variance)
         self.error_value = np.mean(self.error)
 
