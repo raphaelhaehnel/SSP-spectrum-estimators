@@ -3,7 +3,7 @@
 This project has been done during the course "SSP" with Prof. Sharon Gannot, Bar-Ilan University,
 2023, second semester.
 
-The aim of this project is to implement differents estimators to estimate spectrums and compare they efficiency
+The aim of this project is to implement different estimators to estimate spectrums and compare their efficiency.
 
 The exercice deals with spectrum estimation of two signals: MA process and AR process. We're dealing with 5 estimators:
 
