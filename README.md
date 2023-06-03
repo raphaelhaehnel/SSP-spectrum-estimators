@@ -3,8 +3,12 @@
 This project has been done during the course "SSP" with Prof. Sharon Gannot, Bar-Ilan University,
 2023, second semester.
 
-The aim of this project is to implement differents estimators to estimate spectrums.
+The aim of this project is to implement differents estimators to estimate spectrums and compare they efficiency
 
-The exercice deals with spectrum estimation of two signals: MA process and AR process.
+The exercice deals with spectrum estimation of two signals: MA process and AR process. We're dealing with x estimators:
 
-The purpose of the exercice is to compare the estimation efficiency with different methods
+1. Correlogram
+2. Periodogram
+3. Barlett
+4. Welch
+5. Blackman Tukey
