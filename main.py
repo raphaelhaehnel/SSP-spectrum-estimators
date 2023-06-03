@@ -32,7 +32,7 @@ def display_analytic_spectrum(omega: np.ndarray, Sxx1: np.ndarray, Sxx2: np.ndar
     plt.title("Analytic computation of the spectrum")
     plt.plot(omega, Sxx1, label="$S_{XX_1}$", color="tab:blue")
     plt.plot(omega, Sxx2, label="$S_{XX_2}$", color="tab:orange")
-    plt.legend()
+    plt.legend(loc="upper right")
     plt.grid()
     plt.xlabel(r"$\omega$")
     plt.ylabel(r"$S_{XX}$")
@@ -94,8 +94,8 @@ def display_estimators(
     fig, ax = plt.subplots(2, sharex=True)
     fig.suptitle(title)
 
-    if x1_correlogram is not None:
-        ax[0].plot(k_half, x1_correlogram, label="Correlogram")
+    # if x1_correlogram is not None:
+    #     ax[0].plot(k_half, x1_correlogram, label="Correlogram")
 
     # Display all the estimators for x1
     ax[0].plot(k_half, x1_periodogram, label="Periodogram")
@@ -111,11 +111,11 @@ def display_estimators(
 
     ax[0].set_xlabel(r"$\omega$")
     ax[0].set_ylabel(r"$\hat{S}_{XX_1}$")
-    ax[0].legend()
+    ax[0].legend(loc="upper right")
     ax[0].grid()
 
-    if x2_correlogram is not None:
-        ax[1].plot(k_half, x2_correlogram, label="Correlogram")
+    # if x2_correlogram is not None:
+    #     ax[1].plot(k_half, x2_correlogram, label="Correlogram")
 
     # Display all the estimators for x2
     ax[1].plot(k_half, x2_periodogram, label="Periodogram")
@@ -131,7 +131,7 @@ def display_estimators(
 
     ax[1].set_xlabel(r"$\omega$")
     ax[1].set_ylabel(r"$\hat{S}_{XX_2}$")
-    ax[1].legend()
+    ax[1].legend(loc="upper right")
     ax[1].grid()
 
 
@@ -193,11 +193,11 @@ if __name__ == "__main__":
     # For the first question, we want to display the result of the analytic computation of the spectrum
     # for x_1 and x_2
 
-    # Resolution of the spectrum
-    L_samples = 2049
+    # Resolution of the spectrum for the analytic signal
+    L_frequencies = 2049
 
     # Defining omega as x asis
-    omega = np.linspace(0, np.pi, L_samples)
+    omega = np.linspace(0, np.pi, L_frequencies)
 
     # Generate the analytic spectrum of x1
     Sxx1 = generate_analytic_spectrum(Signal.x1, omega)
@@ -427,6 +427,7 @@ if __name__ == "__main__":
         None,
     )
 
+    # Mean value for the bias of the Monte-Carlo for the signal x1
     x1_biases = np.array(
         [
             mc_x1_periodogram.bias_value,
@@ -438,6 +439,8 @@ if __name__ == "__main__":
             mc_x1_bt_2.bias_value,
         ]
     )
+
+    # Mean value for the bias of the Monte-Carlo for the signal x2
     x2_biases = np.array(
         [
             mc_x2_periodogram.bias_value,
@@ -449,6 +452,8 @@ if __name__ == "__main__":
             mc_x2_bt_2.bias_value,
         ]
     )
+
+    # Mean value for the variance of the Monte-Carlo for the signal x1
     x1_variance = np.array(
         [
             mc_x1_periodogram.variance_value,
@@ -460,6 +465,8 @@ if __name__ == "__main__":
             mc_x1_bt_2.variance_value,
         ]
     )
+
+    # Mean value for the variance of the Monte-Carlo for the signal x2
     x2_variance = np.array(
         [
             mc_x2_periodogram.variance_value,
@@ -471,6 +478,8 @@ if __name__ == "__main__":
             mc_x2_bt_2.variance_value,
         ]
     )
+
+    # Mean value for the mean square error of the Monte-Carlo for the signal x1
     x1_error = np.array(
         [
             mc_x1_periodogram.error_value,
@@ -482,6 +491,8 @@ if __name__ == "__main__":
             mc_x1_bt_2.error_value,
         ]
     )
+
+    # Mean value for the mean square error of the Monte-Carlo for the signal x2
     x2_error = np.array(
         [
             mc_x2_periodogram.error_value,
@@ -493,6 +504,8 @@ if __name__ == "__main__":
             mc_x2_bt_2.error_value,
         ]
     )
+
+    # Displays the mean value as bar chart for each metric, for each estimator and for each signal
     display_bar_chart("Bias values", LIST_ESTIMATORS, x1_biases, x2_biases)
     display_bar_chart("Variance values", LIST_ESTIMATORS, x1_variance, x2_variance)
     display_bar_chart("Error values", LIST_ESTIMATORS, x1_error, x2_error)
