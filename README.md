@@ -46,8 +46,14 @@ Next we’ll show all the spectrums estimations before and after the Monte-Carlo
 <img src="https://github.com/raphaelhaehnel/SSP-spectrum-estimators/assets/69756617/01eb0ae2-68cb-4b5d-9cbf-6bfdfe343449" width="50%">
 
 After:
-
 <img src="https://github.com/raphaelhaehnel/SSP-spectrum-estimators/assets/69756617/9bffd1e8-f30d-4ba6-be28-7b15b057cb8e" width="50%">
 
+And now we’ll display the different metrics: bias, variance and mean square error (variance and mse are shown on logarithm scale).
+
+<img src="https://github.com/raphaelhaehnel/SSP-spectrum-estimators/assets/69756617/b60717ff-cc33-41e3-87a6-979d7d77b95c" width="50%">
+
+<img src="https://github.com/raphaelhaehnel/SSP-spectrum-estimators/assets/69756617/f6615449-5fff-4c1d-bb82-544a67ad74dc" width="50%">
+
+<img src="https://github.com/raphaelhaehnel/SSP-spectrum-estimators/assets/69756617/ad098078-ea86-434e-848a-2b3fb79cf61b" width="50%">
 
 
