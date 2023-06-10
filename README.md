@@ -32,7 +32,7 @@ We are giving two signals as input:
 1. MA process: $`x_1 [n]=w_1 [n]-3w_1 [n-1]-4w_1 [n-2]`$
 2. AR process: $`x_2 [n]=0.7x_2 [n-1]+w_2 [n]`$
 
-![image](https://github.com/raphaelhaehnel/SSP-spectrum-estimators/assets/69756617/301e5d77-6c5f-40c3-b9c6-7a2482505c53)
+<img src="https://github.com/raphaelhaehnel/SSP-spectrum-estimators/assets/69756617/301e5d77-6c5f-40c3-b9c6-7a2482505c53" width="50%">
 
 ### Output
 
