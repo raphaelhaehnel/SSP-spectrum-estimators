@@ -37,17 +37,17 @@ We are giving two signals as input:
 ### Output
 
 First we are computing analytically the spectrum, and we are displaying the results.
-![image](https://github.com/raphaelhaehnel/SSP-spectrum-estimators/assets/69756617/3f5cf822-3d43-44bc-8784-06af2f88c0de)
+<img src="https://github.com/raphaelhaehnel/SSP-spectrum-estimators/assets/69756617/3f5cf822-3d43-44bc-8784-06af2f88c0de" width="50%">
 
 We are computing the Correlogram and the Periodogram. We can see on the graph that they are the same.
-![image](https://github.com/raphaelhaehnel/SSP-spectrum-estimators/assets/69756617/561d56d9-1d3c-48ba-83cd-51e3d28dee98)
+<img src="https://github.com/raphaelhaehnel/SSP-spectrum-estimators/assets/69756617/561d56d9-1d3c-48ba-83cd-51e3d28dee98" width="50%">
 
 Next we’ll show all the spectrums estimations before and after the Monte-Carlo simulation. Before:
-![image](https://github.com/raphaelhaehnel/SSP-spectrum-estimators/assets/69756617/01eb0ae2-68cb-4b5d-9cbf-6bfdfe343449)
+<img src="https://github.com/raphaelhaehnel/SSP-spectrum-estimators/assets/69756617/01eb0ae2-68cb-4b5d-9cbf-6bfdfe343449" width="50%">
 
 After:
-![image](https://github.com/raphaelhaehnel/SSP-spectrum-estimators/assets/69756617/9bffd1e8-f30d-4ba6-be28-7b15b057cb8e)
 
+<img src="https://github.com/raphaelhaehnel/SSP-spectrum-estimators/assets/69756617/9bffd1e8-f30d-4ba6-be28-7b15b057cb8e" width="50%">
 
 
 
